@@ -1,12 +1,27 @@
 --- #YAML:1.0
 name: Text-WikiFormat
-version: 0.71
+version: 0.72
+author:
+  - ! >-
+    chromatic, C<chromatic@wgz.org>, with much input from the Jellybean team
+    
+    (including Jonathan Paulett).  Kate L Pugh has also provided several
+    patches,
+    
+    many failing tests, and is usually the driving force behind new features and
+    
+    releases.  If you think this module is worth buying me a beer, she deserves
+    at
+    
+    least half of it.
+abstract: |-
+  module for translating Wiki formatted text into other formats
 license: perl
-distribution_type: module
 requires:
   Test::More: 0.3
   URI::Escape: ''
-recommends: {}
-build_requires: {}
-conflicts: {}
-generated_by: Module::Build version 0.16
+provides:
+  Text::WikiFormat:
+    file: lib/Text/WikiFormat.pm
+    version: 0.72
+generated_by: Module::Build version 0.24

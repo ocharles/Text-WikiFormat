@@ -20,7 +20,7 @@ my $text =<<END_WIKI;
 	* unordered item
 	1. ordered item
 
-	some code
+	  some code
 
 a normal paragraph
 
@@ -52,9 +52,9 @@ is_deeply( $result,
 	{ type => 'ordered', args => [ 6 ], text => 'ordered item', level => 2 },
 		'... and ordered list' );
 
-($result) = $sb->( '		  some code', $tags );
+($result) = $sb->( '	  some code', $tags );
 is_deeply( $result,
-	{ type => 'code', args => [], text => 'some code', level => 0 },
+	{ type => 'code', args => [], text => "\tsome code", level => 0 },
 		'... and code' );
 
 ($result) = $sb->( 'paragraph', $tags );

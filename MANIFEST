@@ -7,9 +7,7 @@ MANIFEST.SKIP
 Makefile.PL
 META.yml
 README
-SIGNATURE
 lib/Text/WikiFormat.pm
-t/0-signature.t
 t/Wiki.t
 t/base.t
 t/bugs.t

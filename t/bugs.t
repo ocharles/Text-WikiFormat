@@ -8,7 +8,7 @@ BEGIN
 	use lib '../lib', '../blib/lib';
 }
 
-use Test::More tests => 9;
+use Test::More tests => 11;
 
 use_ok( 'Text::WikiFormat' );
 
@@ -76,3 +76,21 @@ my $foo   = 'x';
 $foo     .= '' unless $foo =~ /x/;
 my $html  = Text::WikiFormat::format('test');
 is( $html, "<p>test</p>\n", 'successful prior match should not whomp format()');
+
+$wikitext =<<'WIKI';
+Here is some example code:
+
+	sub example_code {
+		my ( $foo ) = @_;
+		my $this    = call_that( $foo );
+	}
+
+Isn't it nice?
+WIKI
+
+$htmltext = Text::WikiFormat::format($wikitext, { blocks => { code => '\t' }} );
+
+like( $htmltext, qr!<pre><code>sub example_code[^<]+}\s*</code></pre>!m,
+	'pre tags should work' ); 
+
+like( $htmltext, qr!^\tmy \( \$foo \)!m, '... not removing further indents' ); 

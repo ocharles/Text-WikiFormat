@@ -7,10 +7,10 @@ use URI;
 use URI::Escape;
 
 use vars qw( $VERSION %tags $indent );
-$VERSION = 0.71;
+$VERSION = 0.72;
 
 $indent = qr/^(?:\t+|\s{4,})/;
-%tags = (
+%tags   = (
 	indent		=> qr/^(?:\t+|\s{4,})/,
 	newline		=> '<br />',
 	link		=> \&make_html_link,
@@ -156,17 +156,26 @@ sub start_block
 
 	for my $block (@{ $tags->{blockorder} })
 	{
-		my ($line, $level) = ( $text, 0 );
+		my ($line, $level, $indentation)  = ( $text, 0, '' );
+
 		if ($tags->{indented}{$block})
 		{
-			($level, $line) = get_indentation( $tags, $line );
+			($level, $line, $indentation) = get_indentation( $tags, $line );
 			next unless $level;
 		}
 
-		next unless $line =~ /$tags->{blocks}{$block}/;
-		$level = 0 if $block eq 'code';
-		
-		$line =~ s/$tags->{blocks}{$block}//;
+		my $marker_removed = length ($line =~ s/$tags->{blocks}{$block}//);
+		if ($block eq 'code')
+		{
+			$level          = 0;
+			$marker_removed = 1;
+
+			# don't remove the indent, but do remove the code indent
+			($line = $text) =~ s/$tags->{blocks}{code}//;
+		}
+
+		next unless $marker_removed;
+
 		return {
 			args => [ grep { defined } $1, $2, $3, $4, $5, $6, $7, $8, $9 ],
 			type => $block,
@@ -290,7 +299,7 @@ sub get_indentation
 	my ($tags, $text) = @_;
 
 	return 0, $text unless $text =~ s/($tags->{indent})//;
-	return length( $1 ) + 1, $text;
+	return( length( $1 ) + 1, $text, $1 );
 }
 
 sub end_all_lists
@@ -399,25 +408,27 @@ sub find_extended_links
 
 sub make_html_link
 {
-	my ($link, $opts) = @_;
-	$opts ||= {};
-	($link, my $title) = find_link_title( $link, $opts );
+	my ($link, $opts)        = @_;
+	$opts                  ||= {};
 
-	$link = escape_link( $link, $opts );
+	($link, my $title)       = find_link_title( $link, $opts );
+	($link, my $is_relative) = escape_link( $link, $opts );
 
-	my $prefix = defined $opts->{prefix} ? $opts->{prefix} : '';
+	my $prefix               = ( defined $opts->{prefix} && $is_relative )
+		? $opts->{prefix} : '';
+
 	return qq|<a href="$prefix$link">$title</a>|;
 }
 
 sub escape_link
 {
 	my ($link, $opts) = @_;
-	return uri_escape( $link ) unless $opts->{absolute_links};
-		
+
 	my $u = URI->new( $link );
 	return $link if $u->scheme();
 
-	return uri_escape( $link );
+	# it's a relative link
+	return( uri_escape( $link ), 1 );
 }
 
 sub find_link_title
@@ -505,6 +516,11 @@ A boolean flag, false by default, which treats any links that are absolute URIs
 (such as http://www.cpan.org/) to be treated specially. Any prefix will not
 apply and the URIs aren't quoted. Must be used in conjunction with the
 C<extended> option for the link to be detected.
+
+This uses the L<URI> module to determine if links are absolute.  See the
+documentation for C<URI::schema> for the gory details of what is and isn't a
+valid schema.  C<http://>, C<ftp://>, C<mailto://>, and C<gopher://> all
+qualify.
 
 =head2 Wiki Format
 
@@ -752,7 +768,8 @@ least half of it.
 Tony Bowden, Tom Hukins, and Andy H. all suggested useful features that are now
 implemented.  
 
-Sam Vilain found a silly bug.
+Sam Vilain, Chris Winters, and Paul Schmidt have all found and reported silly
+bugs.
 
 Blame me for the implementation.
 
@@ -784,5 +801,5 @@ Matt Sergeant keeps threatening to write a nice SAX-throwing Wiki formatter.
 
 =head1 COPYRIGHT
 
-Copyright (c) 2002 - 2003, chromatic.  All rights reserved.  This module is
+Copyright (c) 2002 - 2004, chromatic.  All rights reserved.  This module is
 distributed under the same terms as Perl itself.

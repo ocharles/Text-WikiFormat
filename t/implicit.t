@@ -2,9 +2,10 @@
 
 use strict;
 
-BEGIN {
+BEGIN
+{
 	chdir 't' if -d 't';
-	unshift @INC, '../lib';
+	use lib '../lib', '../blib/lib';
 }
 
 use Test::More tests => 2;

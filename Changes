@@ -1,3 +1,13 @@
+0.72 Sun May  9 00:20:26 UTC 2004
+	- further code block nested indentation fixes (reported by Chris Winters)
+
+	Sat May  8 06:44:54 UTC 2004
+	- improve code block handling (reported by Chris Winters)
+
+	Sat Apr 24 18:57:17 UTC 2004
+	- don't add prefix to absolute links when expecting them (Paul Schmidt and
+	  Chris Winters)
+
 0.71 Tue Aug  5 00:49:09 GMT 2003
 	- fixed a bug in default paragraph regex (Sam Vilain and Kake)
 
