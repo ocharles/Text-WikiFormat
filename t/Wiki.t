@@ -17,7 +17,7 @@ local *Text::WikiFormat::getCurrentStatic;
 	return \%constants;
 };
 
-use Test::More tests => 31;
+use Test::More tests => 32;
 
 use_ok( 'Text::WikiFormat' );
 
@@ -116,6 +116,7 @@ like( $htmltext, qr!<p>Here is another paragraph.</p>!,
 	'... should add no newline at end of paragraph' );
 like( $htmltext, qr|''literal'' double single|,
 	'... should treat code sections literally' );
+unlike( $htmltext, qr!<(\w+)></\1>!, '... but should not create empty lists' );
 
 # test overridable tags
 
@@ -137,7 +138,8 @@ Text::WikiFormat::import( as => 'wf', prefix => 'foo', tag => 'bar' );
 	'... and should be a wrapper around format()' );
 
 my @args;
-local *Text::WikiFormat::format = sub {
+local *Text::WikiFormat::format;
+*Text::WikiFormat::format = sub {
 	@args = @_;
 };
 

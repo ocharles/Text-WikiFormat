@@ -3,7 +3,7 @@ package Text::WikiFormat;
 use strict;
 
 use vars qw( $VERSION %tags $indent );
-$VERSION = 0.30;
+$VERSION = 0.40;
 
 $indent = qr/^(?:\t+|\s{4,})/;
 %tags = (
@@ -24,6 +24,7 @@ $indent = qr/^(?:\t+|\s{4,})/;
 		unordered	=> qr/$indent\*\s*/,
 		code		=> qr/$indent/,
 	},
+	listorder => [qw( ordered unordered code )],
 );
 
 sub import {
@@ -53,6 +54,17 @@ sub import {
 	}
 }
 
+sub _available_lists {
+	my $tags = shift;
+	my $order = $tags->{listorder} || [];
+	my $lists = $tags->{lists};
+	my %difference;
+	@difference{ keys %{ $tags->{ lists } } } = ();
+	delete @difference{ @$order };
+	unshift @$order, keys %difference;
+	return $order;
+}
+
 sub format {
 	my ($text, $newtags, $opts) = @_;
 	$opts ||= { prefix => '', extended => 0};
@@ -62,7 +74,8 @@ sub format {
 		@tags{ keys %$newtags } = values %$newtags;
 	}
 
-	my %lists = map { $_ => [] } qw( code ordered unordered paragraph );
+	my $list_types = _available_lists( \%tags );
+	my %lists = map { $_ => [] } @$list_types;
 	my ($parsed, $active_list) = ('', '');
 
 	for my $line (split(/\n/, $text)) {
@@ -70,7 +83,7 @@ sub format {
 		# list element
 		if ($line =~ /$indent/) {
 
-			foreach my $list (keys %{ $tags{lists} }) {
+			foreach my $list (@$list_types) {
 
 				my $regex = $tags{lists}->{$list};
 				if (my @captures = ($line =~ $regex)) {
@@ -126,6 +139,7 @@ sub format {
 sub end_list {
 	my ($lists, $active, $tags) = @_;
 
+	return '' unless @{ $lists->{$active} };
 	my $result = join('', $tags->[0], @{ $lists->{$active} }, $tags->[1]);
 	$lists->{$active} = [];
 	return $result;
@@ -364,12 +378,31 @@ expressions may not reflect your modifications.  This may be corrected in a
 future version, but this really B<ought> to be kept a read-only variable as
 much as possible.)
 
+=head3 Finding Lists in the Correct Order
+
+As intrepid bug reporter Tom Hukins pointed out in CPAN RT bug #671, the order
+in which Text::WikiFormat searches for lists varies by platform and version of
+Perl.  Because some list-finding regular expressions are more specific than
+others, what's intended to be one type of list may be caught by a different
+list type.
+
+If you're adding new list types, be aware of this.  The C<listorder> entry in
+C<%tags> exists to force Text::WikiFormat to apply its regexes from most
+specific to least specific.  It contains an array reference.  By default, it
+looks for ordered lists first, unordered lists second, and code references at
+the end:
+
+Any additional list types will be processed before the built-in types, but
+their order of execution is not guaranteed B<unless> you set the order
+explicitly.  I can't read all of your minds.  :)
+
 =back
 
 =head1 AUTHOR
 
 chromatic, C<chromatic@wgz.org>, with much input from the Jellybean team
-(including Jonathan Paulett).
+(including Jonathan Paulett).  Tony Bowden and Tom Hukins both suggested some
+useful features.  Blame me for the implementation.
 
 =head1 BUGS
 

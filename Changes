@@ -1,3 +1,11 @@
+0.40 Tue Jun 11 05:23:44 UTC 2002
+	- added _available_lists(), 'linkorder', and t/lists.t
+	- made format() respect 'linkorder'
+	- made end_list() return blank code for empty list
+	(all suggested by Tom Hukins, see CPAN RT #671)
+
+	- avoid 'Subroutine redefined' warning with 5.8 in t/Wiki.t
+
 0.30 Thu May  2 20:42:14 PDT 2002
 	- added import() and its tests, suggested by Tony Bowden <tony@kasei.com>
 

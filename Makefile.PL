@@ -6,6 +6,6 @@ WriteMakefile(
     'NAME'	=> 'Text::WikiFormat',
     'VERSION_FROM' => 'lib/Text/WikiFormat.pm', # finds $VERSION
     'PREREQ_PM' => { 'Test::More' => 0.30 },
-    'PM'	=> { 'lib/Text/WikiFormat.pm' => '$(INST_LIBDIR)/Text/WikiFormat.pm' },
+    'PM'	=> { 'lib/Text/WikiFormat.pm' => '$(INST_LIBDIR)/WikiFormat.pm' },
 );
 
