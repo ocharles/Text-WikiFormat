@@ -1,6 +1,8 @@
 ARTISTIC
 GPL
 MANIFEST
+README
+Changes
 Makefile.PL
 lib/Text/WikiFormat.pm
 t/Wiki.t

@@ -3,7 +3,7 @@ package Text::WikiFormat;
 use strict;
 
 use vars qw( $VERSION %tags $indent );
-$VERSION = 0.20;
+$VERSION = 0.30;
 
 $indent = qr/^(?:\t+|\s{4,})/;
 %tags = (
@@ -25,6 +25,33 @@ $indent = qr/^(?:\t+|\s{4,})/;
 		code		=> qr/$indent/,
 	},
 );
+
+sub import {
+	return unless @_;
+
+	my $caller = caller();
+	my $name = @_ == 1 ? shift : 'wikiformat';
+	my %args = @_;
+	if (exists $args{as}) {
+		$name = delete $args{as};
+	}
+	my %defopts = map { $_ => delete $args{ $_ } } qw( prefix extended );
+
+	no strict 'refs';
+	*{ $caller . "::$name" } = sub {
+		my ($text, $tags, $opts) = @_;
+
+		$tags ||= {};
+		$opts ||= {};
+
+		my %tags = %args;
+		@tags{ keys %$tags } = values %$tags;
+		my %opts = %defopts;
+		@opts{ keys %$opts } = values %$opts;
+
+		Text::WikiFormat::format( $text, \%tags, \%opts);
+	}
+}
 
 sub format {
 	my ($text, $newtags, $opts) = @_;
@@ -219,6 +246,47 @@ The following is valid Wiki formatting, with an extended link as marked.
 
 	The first line of a normal paragraph.
 	The second line of a normal paragraph.  Whee.
+
+=head1 EXPORT
+
+If you'd like to make your life more convenient, you can optionally import a
+subroutine that already has default tags and options set up.  This is
+especially handy if you will be using a prefix:
+
+	use Text::WikiFormat prefix => 'http://www.example.com/';
+	wikiformat( 'some text' );
+
+All tags are interpreted as, well, tags, except for three special keys:
+
+=over 4
+
+=item * C<prefix>, interpreted as a link prefix
+
+=item * C<extended>, interpreted as the extended link flag
+
+=item * C<as>, interpreted as an alias for the imported function
+
+=back
+
+Use the C<as> flag to control the name by which the imported function is
+called.  For example,
+
+	use Text::WikiFormat as => 'formatTextInWikiStyle';
+	formatTextInWikiStyle( 'some text' );
+
+You might choose a better name, though.
+
+The calling semantics are effectively the same as those of the format()
+function.  Any additional tags or options to the imported function will
+override the defaults.  In this example:
+
+	use Text::WikiFormat as => 'wf', extended => 0;
+	wf( 'some text', {}, { extended => 1 });
+
+extended links will be enabled, though the default is to disable them.
+
+This feature was suggested by Tony Bowden E<lt>tony@kasei.comE<gt>, but all
+implementation blame rests solely with me.
 
 =head1 GORY DETAILS
 

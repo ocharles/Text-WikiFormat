@@ -5,7 +5,6 @@ use strict;
 BEGIN {
 	chdir 't' if -d 't';
 	unshift @INC, '../lib';
-	$INC{'Slash/Utility.pm'} = 1;
 }
 
 # for testing 'rootdir' in links
@@ -18,7 +17,7 @@ local *Text::WikiFormat::getCurrentStatic;
 	return \%constants;
 };
 
-use Test::More 'no_plan';
+use Test::More tests => 31;
 
 use_ok( 'Text::WikiFormat' );
 
@@ -119,5 +118,37 @@ like( $htmltext, qr|''literal'' double single|,
 	'... should treat code sections literally' );
 
 # test overridable tags
+
+ok( ! UNIVERSAL::can( 'main', 'wikiformat' ),
+	'Module should import nothing by default' );
+
+can_ok( 'Text::WikiFormat', 'import' );
+
+# given an argument, export wikiformat() somehow
+package Foo;
+
+Text::WikiFormat::import('wikiformat');
+::can_ok( 'Foo', 'wikiformat' );
+
+package Bar;
+Text::WikiFormat::import( as => 'wf', prefix => 'foo', tag => 'bar' );
+::can_ok( 'Bar', 'wf' );
+::isnt( \&wf, \&Text::WikiFormat::format,
+	'... and should be a wrapper around format()' );
+
+my @args;
+local *Text::WikiFormat::format = sub {
+	@args = @_;
+};
+
+wf();
+::is( $args[2]{prefix}, 'foo', 
+	'imported sub should pass through default option' );
+::is( $args[1]{tag}, 'bar', '... and default tag' );
+
+wf('text', { tag2 => 1 }, { prefix => 'baz' });
+::is( $args[0], 'text', '... passing through text unharmed' );
+::is( $args[1]{tag2}, 1, '... along with new tags' );
+::is( $args[2]{prefix}, 'baz', '... overriding default args as needed' );
 
 1;
