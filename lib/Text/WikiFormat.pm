@@ -7,7 +7,7 @@ use URI;
 use URI::Escape;
 
 use vars qw( $VERSION %tags $indent );
-$VERSION = 0.70;
+$VERSION = 0.71;
 
 $indent = qr/^(?:\t+|\s{4,})/;
 %tags = (
@@ -35,7 +35,7 @@ $indent = qr/^(?:\t+|\s{4,})/;
 		unordered	=> qr/^\*\s*/,
 		code		=> qr/  /,
 		header      => qr/^(=+) (.+) \1/,
-		paragraph   => qr//,
+		paragraph   => qr/^/,
 		line        => qr/^-{4,}/,
 	},
 
@@ -721,6 +721,10 @@ This will require indentation and a colon to mark code lines.  A potential
 shortcut is to use the C<indent> tag to match or to change the indentation
 marker.  
 
+B<Note>: if you want to mark a block type as non-indented, you B<cannot> use an
+empty regex such as C<qr//>.  Use a mostly-empty, always-true regex such as
+C<qr/^/> instead.
+
 =head3 Finding Blocks in the Correct Order
 
 As intrepid bug reporter Tom Hukins pointed out in CPAN RT bug #671, the order
@@ -747,6 +751,8 @@ least half of it.
 
 Tony Bowden, Tom Hukins, and Andy H. all suggested useful features that are now
 implemented.  
+
+Sam Vilain found a silly bug.
 
 Blame me for the implementation.
 

@@ -1,3 +1,6 @@
+0.71 Tue Aug  5 00:49:09 GMT 2003
+	- fixed a bug in default paragraph regex (Sam Vilain and Kake)
+
 0.70 Thu Jul 31 04:56:51 GMT 2003
 	- apply slightly modified patch from Andy H. for absolute extended links
 

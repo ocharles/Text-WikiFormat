@@ -8,7 +8,7 @@ BEGIN
 	use lib '../lib', '../blib/lib';
 }
 
-use Test::More tests => 8;
+use Test::More tests => 9;
 
 use_ok( 'Text::WikiFormat' );
 
@@ -71,3 +71,8 @@ local $SIG{__WARN__} = sub { $warning = shift };
 eval { Text::WikiFormat::format($wikitext, \%format_tags ) };
 is( $@, '', 'format() should not die if a block is missing from blockorder' );
 like( $warning, qr/No order specified/, '... warning instead' );
+
+my $foo   = 'x';
+$foo     .= '' unless $foo =~ /x/;
+my $html  = Text::WikiFormat::format('test');
+is( $html, "<p>test</p>\n", 'successful prior match should not whomp format()');
