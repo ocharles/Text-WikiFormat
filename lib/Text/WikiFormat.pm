@@ -5,7 +5,7 @@ use strict;
 use URI::Escape;
 
 use vars qw( $VERSION %tags $indent );
-$VERSION = 0.50;
+$VERSION = 0.60;
 
 $indent = qr/^(?:\t+|\s{4,})/;
 %tags = (
@@ -26,7 +26,9 @@ $indent = qr/^(?:\t+|\s{4,})/;
 		unordered	=> qr/$indent\*\s*/,
 		code		=> qr/$indent/,
 	},
-	listorder => [qw( ordered unordered code )],
+
+	listorder                => [qw( ordered unordered code )],
+	extended_link_delimiters => [qw( [ ] )],
 );
 
 sub process_args
@@ -53,6 +55,7 @@ sub merge_hash
 	{
 		if (UNIVERSAL::isa( $value, 'HASH' ))
 		{
+			$to->{$key} = {} unless defined $to->{$key};
 			merge_hash( $value, $to->{$key} );
 		}
 		else
@@ -194,10 +197,34 @@ sub format_line
 	$text =~ s!''(.+?)''!$tags->{emphasized}->($1, $opts)!eg;
 	$text =~ s!^-{4,}!$tags->{line}!gm;
 
-	$text =~ s!\[([^\]]+)\]!$tags->{link}->($1, $opts)!eg if $opts->{extended};
+	$text = find_extended_links( $text, $tags, $opts ) if $opts->{extended};
 
 	$text =~ s|(?<!["/>=])\b([A-Za-z]+(?:[A-Z]\w+)+)|$tags->{link}->($1, 
 	$opts)|eg if !defined $opts->{implicit_links} or $opts->{implicit_links};
+
+	return $text;
+}
+
+sub find_extended_links
+{
+	my ($text, $tags, $opts) = @_;
+
+	my ($start, $end) = @{ $tags->{extended_link_delimiters} };
+
+	my $position = 0;
+	while (1)
+	{
+		my $open = index $text, $start, $position;
+		last if $open == -1;
+		my $close   = index $text, $end, $open;
+		last if $close == -1;
+
+		my $text_start = $open + length $start;
+		my $extended = substr $text, $text_start, $close - $text_start;
+		$extended = $tags->{link}->( $extended, $opts );
+		substr $text, $open, $close - $open + length $end, $extended;
+		$position += length $extended;
+	};
 
 	return $text;
 }
@@ -271,6 +298,10 @@ links:
 Where the linking semantics of the destination format allow it, the
 title will be displayed instead of the URI.  In HTML terms, the title
 is the content of an A element (not the content of its HREF attribute).
+
+You can use delimiters other than single square brackets for marking
+extended links, by passing a value for C<extended_link_delimiters>
+in the C<%tags> hash when calling C<format> (see below for details).
 
 =item * implicit_links
 
@@ -384,6 +415,17 @@ for a strong tag can be reimplemented with this syntax:
 
 	my $html = format($text, { strong => sub { "<b>$_[0]</b>" } });
 
+Finally, there are C<extended_link_delimiters>, which allow you to use
+delimiters other than single square brackets for marking extended links.  Pass
+the tags as:
+
+	my $html = format( $text, { extended_link_delimiters => [ '[[', ']]' ] });
+
+This will allow you to use double square brackets as UseMod supports:
+
+	[[an extended link]]
+	[[a titled extended link|title]]
+
 =head3 Lists
 
 There are three types of lists:  C<code>, C<unordered>, and C<ordered>.  Each
@@ -392,7 +434,7 @@ or more whitespace characters.  (This does not include newlines, however.)  Any
 line that does not fall in any of these three categories is automatically put
 in a C<paragraph> list.
 
-Lists are not required to have indendation, as of version 0.50.  Be careful
+Lists are not required to have indentation, as of version 0.50.  Be careful
 with this, however.
 
 List entries in the tag hashes must contain array references.  The first two

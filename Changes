@@ -1,3 +1,15 @@
+0.60 Sat Mar  1 18:54:06 GMT 2003
+	- ported to use Module::Build
+
+      Wed Feb 19 22:25:56 GMT 2003
+	- added t/merge-hash.t (Kake)
+	- make sure nested hashes merge even if not in destination (Kake)
+	- protect against overwriting values of 0 (almost wrote a bug!)
+	- fix a doc typo (Kake)
+	- allow alternate extended link delimiters (Kake)
+	- addede explicit.t (Kake)
+	- added t/tag-override-use-as.t (Kake)
+
 0.50 Thu Dec 26 23:07:07 GMT 2002
 	- added t/tag-override.t tests for tag overriding (Kake)
 	- minor refactorings to improve design
