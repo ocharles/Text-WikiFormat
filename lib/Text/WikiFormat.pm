@@ -5,7 +5,7 @@ use strict;
 use URI::Escape;
 
 use vars qw( $VERSION %tags $indent );
-$VERSION = 0.45;
+$VERSION = 0.50;
 
 $indent = qr/^(?:\t+|\s{4,})/;
 %tags = (
@@ -29,21 +29,49 @@ $indent = qr/^(?:\t+|\s{4,})/;
 	listorder => [qw( ordered unordered code )],
 );
 
-sub import {
+sub process_args
+{
+	my $self = shift;
+	my $name = @_ == 1 ? shift : 'wikiformat';
+	return ( as => $name, @_ );
+}
+
+sub default_opts
+{
+	my ($class, $args) = @_;
+
+	my %defopts = ( implicit_links => 1, map { $_ => delete $args->{ $_ } }
+		qw( prefix extended implicit_links) );
+
+	return %defopts;
+}
+
+sub merge_hash
+{
+	my ($from, $to) = @_;
+	while (my ($key, $value) = each %$from)
+	{
+		if (UNIVERSAL::isa( $value, 'HASH' ))
+		{
+			merge_hash( $value, $to->{$key} );
+		}
+		else
+		{
+			$to->{$key} = $value;
+		}
+	}
+}
+
+sub import
+{
 	my $class = shift;
 	return unless @_;
 
+	my %args    = $class->process_args( @_ );
+	my %defopts = $class->default_opts( \%args );
+
 	my $caller = caller();
-	my $name = @_ == 1 ? shift : 'wikiformat';
-	my %args = @_;
-	if (exists $args{as}) {
-		$name = delete $args{as};
-	}
-
-	my %defopts = map { $_ => delete $args{ $_ } }
-		qw( prefix extended implicit_links);
-
-	$defopts{implicit_links} = 1 unless defined $defopts{implicit_links};
+	my $name   = delete $args{as};
 
 	no strict 'refs';
 	*{ $caller . "::$name" } = sub {
@@ -53,15 +81,16 @@ sub import {
 		$opts ||= {};
 
 		my %tags = %args;
-		@tags{ keys %$tags } = values %$tags;
+		merge_hash( $tags, \%tags );
 		my %opts = %defopts;
-		@opts{ keys %$opts } = values %$opts;
+		merge_hash( $opts, \%opts );
 
 		Text::WikiFormat::format( $text, \%tags, \%opts);
 	}
 }
 
-sub _available_lists {
+sub _available_lists
+{
 	my $tags = shift;
 	my $order = $tags->{listorder} || [];
 	my $lists = $tags->{lists};
@@ -72,78 +101,82 @@ sub _available_lists {
 	return $order;
 }
 
-sub format {
+sub format
+{
 	my ($text, $newtags, $opts) = @_;
 	$opts ||= { prefix => '', extended => 0, implicit_links => 1 };
 
 	my %tags = %tags;
 	if (defined $newtags and UNIVERSAL::isa($newtags, 'HASH')) {
-		@tags{ keys %$newtags } = values %$newtags;
+		merge_hash( $newtags, \%tags );
 	}
 
 	my $list_types = _available_lists( \%tags );
 	my %lists = map { $_ => [] } @$list_types;
 	my ($parsed, $active_list) = ('', '');
 
+	LINE:
 	for my $line (split(/\n/, $text)) {
 
-		# list element
-		if ($line =~ /$indent/) {
+		for my $list (@$list_types) {
 
-			foreach my $list (@$list_types) {
+			my $regex = $tags{lists}->{$list};
+			if (my @captures = ($line =~ $regex)) {
+				$line =~ s/$regex//;
 
-				my $regex = $tags{lists}->{$list};
-				if (my @captures = ($line =~ $regex)) {
-					$line =~ s/$regex//;
+				$line = format_line($line, \%tags, $opts) 
+					unless $list eq 'code';
 
-					$line = format_line($line, \%tags, $opts) 
-						unless $list eq 'code';
+				my $action = $tags{$list} or next;
+				my $formatted;
 
-					my $action = $tags{$list} or next;
-					my $formatted;
-
-					if (@$action == 3) {
-						my $subref = $action->[2];
-						if (defined $subref and defined &$subref) {
-							$formatted = $subref->($line, @captures);
-						} else {
-							warn "Bad actions for list type '$list'\n";
-						}
+				if (@$action == 3) {
+					my $subref = $action->[2];
+					if (defined $subref and defined &$subref) {
+						$formatted = $subref->($line, @captures);
 					} else {
-						$formatted = $action->[2] . $line . $action->[3];
+						warn "Bad actions for list type '$list'\n";
 					}
-
-					# save this list element
-					push @{ $lists{$list} }, $formatted;
-
-					# must end previous list type
-					if ($active_list and $active_list ne $list) {
-						$parsed .= end_list(\%lists, $active_list, 
-							$tags{$active_list});
-					}
-					$active_list = $list;
+				} else {
+					$formatted = $action->[2] . $line . $action->[3];
 				}
+
+				# save this list element
+				push @{ $lists{$list} }, $formatted;
+
+				# must end previous list type
+				if ($active_list and $active_list ne $list) {
+					$parsed .= end_list(\%lists, $active_list, 
+						$tags{$active_list});
+				}
+
+				$active_list = $list;
+				next LINE;
 			}
-		} else {
-			if ($active_list and $active_list ne 'paragraph' or !$line) {
-				pop @{ $lists{paragraph} } unless $line;
-				$parsed .= end_list(\%lists, $active_list, 
-					$tags{$active_list}) if $active_list;
-			}
-			
-			next unless $line;
-			$active_list = 'paragraph';
-			push @{ $lists{paragraph} }, 
-				format_line($line, \%tags, $opts), $tags{newline};
 		}
+
+		if ($active_list and $active_list ne 'paragraph' or !$line) {
+			pop @{ $lists{paragraph} } unless $line;
+			$parsed .= end_list(\%lists, $active_list, 
+				$tags{$active_list}) if $active_list;
+		}
+			
+		next LINE unless $line;
+
+		$active_list = 'paragraph';
+		push @{ $lists{paragraph} }, 
+			format_line($line, \%tags, $opts), $tags{newline};
+
 	}
+
 	pop @{ $lists{paragraph} } if $active_list eq 'paragraph';
 	$parsed .= end_list(\%lists, $active_list, $tags{$active_list})
 		if $active_list;
 	return $parsed;
 }
 
-sub end_list {
+sub end_list
+{
 	my ($lists, $active, $tags) = @_;
 
 	return '' unless @{ $lists->{$active} };
@@ -152,7 +185,8 @@ sub end_list {
 	return $result;
 }
 
-sub format_line {
+sub format_line
+{
 	my ($text, $tags, $opts) = @_;
 	$opts ||= {};
 
@@ -168,13 +202,13 @@ sub format_line {
 	return $text;
 }
 
-sub make_html_link {
+sub make_html_link
+{
 	my ($link, $opts) = @_;
 	$opts ||= {};
 
 	my $title;
-	($link, $title) = split(/\|/, $link, 2)
-	if $opts->{extended};
+	($link, $title) = split(/\|/, $link, 2) if $opts->{extended};
 	$title ||= $link;
 	$link = uri_escape( $link );
 
@@ -353,10 +387,13 @@ for a strong tag can be reimplemented with this syntax:
 =head3 Lists
 
 There are three types of lists:  C<code>, C<unordered>, and C<ordered>.  Each
-of these is marked by indentation, either one or more tabs or four or more
-whitespace characters.  (This does not include newlines, however.)  Any line
-that does not fall in any of these three categories is automatically put in a
-C<paragraph> list.
+of these is I<usually> marked by indentation, either one or more tabs or four
+or more whitespace characters.  (This does not include newlines, however.)  Any
+line that does not fall in any of these three categories is automatically put
+in a C<paragraph> list.
+
+Lists are not required to have indendation, as of version 0.50.  Be careful
+with this, however.
 
 List entries in the tag hashes must contain array references.  The first two
 items are the tags used at the start of the list and at the end of the list.
@@ -436,8 +473,6 @@ I<Sic transit gloria mundi>.
 =head1 TODO
 
 =over 4
-
-=item * Write tests for overriding tags
 
 =item * Find a nicer way to mark list as having unformatted lines
 

@@ -1,3 +1,10 @@
+0.50 Thu Dec 26 23:07:07 GMT 2002
+	- added t/tag-override.t tests for tag overriding (Kake)
+	- minor refactorings to improve design
+	- use hash merging to fix HoH overriding (Kake, again)
+	- added t/lists-no-indent.t to test that non-indented lists work (kake)
+	- added patch from Kake to allow non-indented lists
+
 0.45 Fri Oct 18 01:14:53 UTC 2002
 	- signed distribution with Module::Signature (thanks, Autrijus!)
 

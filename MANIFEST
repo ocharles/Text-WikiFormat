@@ -10,4 +10,6 @@ t/Wiki.t
 t/bugs.t
 t/implicit.t
 t/lists.t
+t/lists-no-indent.t
+t/tag-override.t
 t/0-signature.t
