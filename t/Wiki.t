@@ -1,10 +1,9 @@
-#!/usr/bin/perl -w
 
 use strict;
 
 BEGIN {
 	chdir 't' if -d 't';
-	unshift @INC, '../lib';
+	unshift @INC, '../lib', '../blib/lib';
 }
 
 # for testing 'rootdir' in links
@@ -17,7 +16,7 @@ local *Text::WikiFormat::getCurrentStatic;
 	return \%constants;
 };
 
-use Test::More tests => 34;
+use Test::More tests => 32;
 
 use_ok( 'Text::WikiFormat' );
 
@@ -55,7 +54,6 @@ like( $htmltext, qr!\[<a href="rootdir/wiki\.pl\?page=LinkMeElsewhere">!,
 	'format_line () should link StudlyCaps where found)' );
 like( $htmltext, qr!<strong>hello</strong>!, 'three ticks should mark strong');
 like( $htmltext, qr!<em>hi</em>!, 'two ticks should mark emphasized' );
-like( $htmltext, qr!<hr />\nwoo\n<hr />!m, 'four hyphens should make line' );
 like( $htmltext, qr!LinkMeSomewhere</a>\n!m, 'should catch StudlyCaps' );
 like( $htmltext, qr!\[!, 'should not handle extended links without flag' );
 
@@ -63,19 +61,6 @@ $opts{extended} = 1;
 $htmltext = Text::WikiFormat::format_line($wikitext, \%tags, \%opts);
 like( $htmltext, qr!^<a href="rootdir/wiki\.pl\?page=LinkMeElsewhere">!m,
 	'should handle extended links with flag' );
-
-my %lists = (
-	first	=> [ qw( one two three ) ],
-	second	=> [ qw( alpha beta gamma ) ],
-	third	=> [ qw( gold silver bronze ) ],
-);
-
-my @tags = qw( aleph! !null !omega );
-
-$htmltext = Text::WikiFormat::end_list(\%lists, 'third', \@tags);
-like( $htmltext, qr!goldsilverbronze!, 'end_list() should use active list');
-like( $htmltext, qr|^aleph!.+!null|, '... should use first/last provided tags');
-is( scalar @{ $lists{third} }, 0, '... and should clear active list' );
 
 $htmltext = Text::WikiFormat::format($wikitext);
 like( $htmltext, qr!<strong>hello</strong>!, 'three ticks should mark strong');
@@ -102,13 +87,13 @@ There are newlines in my paragraph.
 
 Here is another paragraph.
 
-	here is some code that should have ''literal'' double single quotes
-	how amusing
+	  here is some code that should have ''literal'' double single quotes
+	  how amusing
 
 WIKIEXAMPLE
 
-$htmltext = Text::WikiFormat::format($wikiexample, '', { prefix => 'foo=' });
-like( $htmltext, qr!^<p>I am modifying this!, 
+$htmltext = Text::WikiFormat::format($wikiexample, {}, { prefix => 'foo=' });
+like( $htmltext, qr!^<p>I am modifying this!,
 	'... should use correct tags when ending lists' );
 like( $htmltext, qr!<p>Here is a paragraph.<br />!,
 	'... should add no newline before paragraph, but at newline in paragraph ');
@@ -134,6 +119,24 @@ like( $htmltext,
 	'... should escape spaces in extended links' );
 like( $htmltext, qr!escape spaces in links</a>!m,
 	'... should leave spaces alone in titles of extended links' );
+
+$wikitext =<<'WIKI';
+= heading =
+== sub heading ==
+
+some text
+
+=== sub sub heading ===
+
+more text
+
+WIKI
+
+$htmltext = Text::WikiFormat::format($wikitext, \%tags, \%opts);
+like( $htmltext, qr!<h1>heading</h1>!,
+	'headings should be marked' );
+like( $htmltext, qr!<h2>sub heading</h2>!,
+	'... and numbered appropriately' );
 
 # test overridable tags
 

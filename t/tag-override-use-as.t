@@ -3,7 +3,7 @@
 BEGIN
 {
 	chdir 't' if -d 't';
-	use lib '../lib', '../blib/lib';
+	unshift @INC, '../blib/lib';
 }
 
 use strict;
@@ -26,19 +26,21 @@ WIKI
 
 my $indent = $Text::WikiFormat::indent;
 
-my %format_tags = ( lists => { unordered => qr/$indent\s*!\s*/ } );
+my %format_tags = ( blocks => { unordered => qr/\s*!\s*/ } );
  
 my $htmltext = wikiformat( $wikitext, \%format_tags, {} );
 like( $htmltext, qr!<li>But marked differently</li>!m,
 	'redefining a list type works with use as' );
 
 %format_tags = (
-	lists => { 
+	indent => qr//,
+	blocks => { 
 		ordered         => qr/^\s*([\dA-Za-z]+)\.\s*/, 
 		unordered       => qr/\s*\*\s*/
-	}
+	},
+	indented => { unordered => 0 },
 ); 
 
 $htmltext = wikiformat( $wikitext, \%format_tags, {} );
-like( $htmltext, qr!<li>But not indented</li>!m,
+like( $htmltext, qr!<li>But not indented!m,
 	'redefining a list type to require no indent works with use as' );

@@ -1,5 +1,13 @@
+#!/usr/bin/perl -w
+
+BEGIN
+{
+	chdir 't' if -d 't';
+	use lib '../lib', '../blib/lib';
+}
+
 use strict;
-use Test::More tests => 10;
+use Test::More tests => 13;
 use Text::WikiFormat;
 
 my $wikitext =<<WIKI;
@@ -24,9 +32,9 @@ like( $htmltext, qr!<li value="1">This should be an ordered list.</li>!m,
 # Redefine all the list regexps to what they were to start with.
 my %tags = (
 	lists => {
-		ordered   => qr/$indent([\dA-Za-z]+)\.\s*/,
-		unordered => qr/$indent\*\s*/,
-		code      => qr/$indent/,
+		ordered   => qr/([\dA-Za-z]+)\.\s*/,
+		unordered => qr/\*\s*/,
+		code      => qr//,
 	},
 );
 
@@ -38,10 +46,10 @@ like( $htmltext, qr!<li value="1">This should be an ordered list.</li>!m,
 
 # Redefine again, set one of them to something different.
 %tags = (
-	lists => {
-		ordered   => qr/$indent([\dA-Za-z]+)\.\s*/,
-		unordered => qr/^$indent\s*!\s*/,
-		code      => qr/$indent/,
+	blocks => {
+		ordered   => qr/([\dA-Za-z]+)\.\s*/,
+		unordered => qr/^\s*!\s*/,
+		code      => qr//,
 	},
 );
 
@@ -53,7 +61,7 @@ like( $htmltext, qr!<li value="1">This should be an ordered list.</li>!m,
 
 # Now try redefining just one list type.
 %tags = (
-	lists => { unordered => qr/$indent\s*!\s*/ },
+	blocks => { unordered => qr/\s*!\s*/ },
 );
 
 $htmltext = Text::WikiFormat::format($wikitext, \%tags, {} );
@@ -62,17 +70,32 @@ like( $htmltext, qr!<li>This is like the default unordered list</li>!m,
 like( $htmltext, qr!<li value="1">This should be an ordered list.</li>!m,
 	'...and should not affect other types too' );
 
+# now test overriding strong and emphasized tags
+# don't use // to mark emphasized tags unless you /like/ this lookbehind
+%tags = (
+	strong_tag     => qr/\*(.+?)\*/,
+	emphasized_tag => qr|(?<!<)/(.+?)/|,
+);
+
+$wikitext = 'this is *strong*, /emphasized/, and */emphasized strong/*';
+$htmltext = Text::WikiFormat::format( $wikitext, \%tags, {} );
+
+like( $htmltext, qr!<strong>strong</strong>!, '... overriding strong tag' );
+like( $htmltext, qr!<em>emphasized</em>!,     '... overriding emphasized tag' );
+like( $htmltext, qr!<strong><em>em.+ng</em></strong>!,
+	'... and both at once' );
+
 # Test redefining just one list type after using import with a list definition.
 package Bar;
 Text::WikiFormat->import(
 	as => 'wf',
-	lists => {
+	blocks => {
 		unordered => qr/^\s*!\s*/
 	},
 );
 
 $htmltext = wf("        !1. Ordered list\n        ! Unordered list",
-               { lists => { ordered => qr/^\s*![\d]+\.\s*/ } }, {} );
+               { blocks => { ordered => qr/^\s*!([\d]+)\.\s*/ } }, {} );
 ::like( $htmltext, qr!<li value="1">Ordered list</li>!m,
 	'redefining a single list type after import should work for that type' );
 ::like( $htmltext, qr!<li>Unordered list</li>!m,

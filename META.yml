@@ -1,6 +1,6 @@
 --- #YAML:1.0
 name: Text-WikiFormat
-version: 0.6
+version: 0.7
 license: perl
 distribution_type: module
 requires:

@@ -11,11 +11,14 @@ SIGNATURE
 lib/Text/WikiFormat.pm
 t/0-signature.t
 t/Wiki.t
+t/base.t
 t/bugs.t
 t/explicit.t
 t/implicit.t
-t/lists-no-indent.t
+t/kake.t
 t/lists.t
+t/lists-nested.t
+t/lists-no-indent.t
 t/merge-hash.t
 t/tag-override-use-as.t
 t/tag-override.t

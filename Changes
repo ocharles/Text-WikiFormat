@@ -1,3 +1,21 @@
+0.70 Thu Jul 31 04:56:51 GMT 2003
+	- apply slightly modified patch from Andy H. for absolute extended links
+
+Wed Jul 30 01:23:01 GMT 2003
+	- process header block contents (Kake)
+	- fix an unintentional static variable bug in find_link_title()
+	- fix a hash order bug in base.t (found by Kake)
+	
+Tue Jul 29 04:11:05 GMT 2003
+	- fix Kake's last nesting problem
+	- allow overriding strong and emphasized tag regexes
+
+Fri May 16 07:29:15 GMT 2003
+	- allow nested lists
+	- major cleanup (see first point)
+	- add indent tag
+	- remove indent from list regexes
+
 0.60 Sat Mar  1 18:54:06 GMT 2003
 	- ported to use Module::Build
 
