@@ -17,7 +17,7 @@ local *Text::WikiFormat::getCurrentStatic;
 	return \%constants;
 };
 
-use Test::More tests => 32;
+use Test::More tests => 34;
 
 use_ok( 'Text::WikiFormat' );
 
@@ -118,6 +118,23 @@ like( $htmltext, qr|''literal'' double single|,
 	'... should treat code sections literally' );
 unlike( $htmltext, qr!<(\w+)></\1>!, '... but should not create empty lists' );
 
+$wikitext =<<WIKI;
+[escape spaces in links]
+
+WIKI
+
+%opts = (
+	prefix   => 'rootdir/wiki.pl?page=',
+	extended => 1,
+);
+
+$htmltext = Text::WikiFormat::format($wikitext, {}, \%opts);
+like( $htmltext,
+	qr!<a href="rootdir/wiki\.pl\?page=escape%20spaces%20in%20links">!m,
+	'... should escape spaces in extended links' );
+like( $htmltext, qr!escape spaces in links</a>!m,
+	'... should leave spaces alone in titles of extended links' );
+
 # test overridable tags
 
 ok( ! UNIVERSAL::can( 'main', 'wikiformat' ),
@@ -128,11 +145,11 @@ can_ok( 'Text::WikiFormat', 'import' );
 # given an argument, export wikiformat() somehow
 package Foo;
 
-Text::WikiFormat::import('wikiformat');
+Text::WikiFormat->import('wikiformat');
 ::can_ok( 'Foo', 'wikiformat' );
 
 package Bar;
-Text::WikiFormat::import( as => 'wf', prefix => 'foo', tag => 'bar' );
+Text::WikiFormat->import( as => 'wf', prefix => 'foo', tag => 'bar' );
 ::can_ok( 'Bar', 'wf' );
 ::isnt( \&wf, \&Text::WikiFormat::format,
 	'... and should be a wrapper around format()' );

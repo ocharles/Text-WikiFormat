@@ -2,7 +2,12 @@ ARTISTIC
 GPL
 MANIFEST
 README
+SIGNATURE
 Changes
 Makefile.PL
 lib/Text/WikiFormat.pm
 t/Wiki.t
+t/bugs.t
+t/implicit.t
+t/lists.t
+t/0-signature.t

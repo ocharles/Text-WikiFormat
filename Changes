@@ -1,3 +1,15 @@
+0.45 Fri Oct 18 01:14:53 UTC 2002
+	- signed distribution with Module::Signature (thanks, Autrijus!)
+
+     Thu Sep 12 18:11:10 UTC 2002
+	- end lists followed by empty paragraphs (RT #1455b, <kake@earth.li>)
+	- add 'implicit_links' flag (suggestion from Kate (kake))
+	- fixed an import bug (also from kake, who provided tests!)
+	- encode links property (yet another kake idea!)
+
+	 Sat Aug 24 23:35:44 UTC 2002
+	- don't end a list if no list is active (RT #1455, <deus_x@pobox.com>)
+
 0.40 Tue Jun 11 05:23:44 UTC 2002
 	- added _available_lists(), 'linkorder', and t/lists.t
 	- made format() respect 'linkorder'

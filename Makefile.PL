@@ -5,7 +5,7 @@ use ExtUtils::MakeMaker;
 WriteMakefile(
     'NAME'	=> 'Text::WikiFormat',
     'VERSION_FROM' => 'lib/Text/WikiFormat.pm', # finds $VERSION
-    'PREREQ_PM' => { 'Test::More' => 0.30 },
+    'PREREQ_PM' => { 'Test::More' => 0.30, URI::Escape => '' },
     'PM'	=> { 'lib/Text/WikiFormat.pm' => '$(INST_LIBDIR)/WikiFormat.pm' },
 );
 

@@ -2,8 +2,10 @@ package Text::WikiFormat;
 
 use strict;
 
+use URI::Escape;
+
 use vars qw( $VERSION %tags $indent );
-$VERSION = 0.40;
+$VERSION = 0.45;
 
 $indent = qr/^(?:\t+|\s{4,})/;
 %tags = (
@@ -28,6 +30,7 @@ $indent = qr/^(?:\t+|\s{4,})/;
 );
 
 sub import {
+	my $class = shift;
 	return unless @_;
 
 	my $caller = caller();
@@ -36,7 +39,11 @@ sub import {
 	if (exists $args{as}) {
 		$name = delete $args{as};
 	}
-	my %defopts = map { $_ => delete $args{ $_ } } qw( prefix extended );
+
+	my %defopts = map { $_ => delete $args{ $_ } }
+		qw( prefix extended implicit_links);
+
+	$defopts{implicit_links} = 1 unless defined $defopts{implicit_links};
 
 	no strict 'refs';
 	*{ $caller . "::$name" } = sub {
@@ -67,7 +74,7 @@ sub _available_lists {
 
 sub format {
 	my ($text, $newtags, $opts) = @_;
-	$opts ||= { prefix => '', extended => 0};
+	$opts ||= { prefix => '', extended => 0, implicit_links => 1 };
 
 	my %tags = %tags;
 	if (defined $newtags and UNIVERSAL::isa($newtags, 'HASH')) {
@@ -121,7 +128,7 @@ sub format {
 			if ($active_list and $active_list ne 'paragraph' or !$line) {
 				pop @{ $lists{paragraph} } unless $line;
 				$parsed .= end_list(\%lists, $active_list, 
-					$tags{$active_list});
+					$tags{$active_list}) if $active_list;
 			}
 			
 			next unless $line;
@@ -156,7 +163,7 @@ sub format_line {
 	$text =~ s!\[([^\]]+)\]!$tags->{link}->($1, $opts)!eg if $opts->{extended};
 
 	$text =~ s|(?<!["/>=])\b([A-Za-z]+(?:[A-Z]\w+)+)|$tags->{link}->($1, 
-		$opts)|eg;
+	$opts)|eg if !defined $opts->{implicit_links} or $opts->{implicit_links};
 
 	return $text;
 }
@@ -166,8 +173,10 @@ sub make_html_link {
 	$opts ||= {};
 
 	my $title;
-	($link, $title) = split(/\|/, $link, 2) if $opts->{extended};
+	($link, $title) = split(/\|/, $link, 2)
+	if $opts->{extended};
 	$title ||= $link;
+	$link = uri_escape( $link );
 
 	my $prefix = $opts->{prefix} || '';
 	return qq|<a href="$prefix$link">$title</a>|;
@@ -218,16 +227,25 @@ create full URIs:
 
 A boolean flag, false by default, to use extended linking semantics.  This is
 stolen from the Everything Engine (L<http://everydevel.com/>), where links are
-marked by square brackets.  An optional title may occur before the link target,
-and is ended with an open pipe.  That is to say, these are valid extended
+marked by square brackets.  An optional title may occur after the link target,
+preceded by an open pipe.  That is to say, these are valid extended
 links:
 
 	[a valid link]
-	[title|link]
+	[link|title]
 
-Where the linking semantics of the destination format allow it, the title will
-be displayed instead of the URI.  In HTML terms, this is the content of an A
-tag, not the contents of the url attribute.
+Where the linking semantics of the destination format allow it, the
+title will be displayed instead of the URI.  In HTML terms, the title
+is the content of an A element (not the content of its HREF attribute).
+
+=item * implicit_links
+
+A boolean flag, true by default, to cause links to be created wherever a
+StudlyCapsString is seen.  Note that if you disable this flag, you'll most
+likely be wanting to enable the C<extended> one also, or there will be no way
+of creating links in your documents.  To disable it, use the pair:
+
+	{ implicit_links => 0 }
 
 =head2 Wiki Format
 
@@ -270,13 +288,15 @@ especially handy if you will be using a prefix:
 	use Text::WikiFormat prefix => 'http://www.example.com/';
 	wikiformat( 'some text' );
 
-All tags are interpreted as, well, tags, except for three special keys:
+All tags are interpreted as, well, tags, except for four special keys:
 
 =over 4
 
 =item * C<prefix>, interpreted as a link prefix
 
 =item * C<extended>, interpreted as the extended link flag
+
+=item * C<implicit_links>, interpreted as the flag to control implicit links
 
 =item * C<as>, interpreted as an alias for the imported function
 
@@ -300,7 +320,9 @@ override the defaults.  In this example:
 extended links will be enabled, though the default is to disable them.
 
 This feature was suggested by Tony Bowden E<lt>tony@kasei.comE<gt>, but all
-implementation blame rests solely with me.
+implementation blame rests solely with me.  Kate L Pugh
+(E<lt>kake@earth.liE<gt>) pointed out that it didn't work, with tests, so it's
+fixed now.
 
 =head1 GORY DETAILS
 
@@ -402,7 +424,8 @@ explicitly.  I can't read all of your minds.  :)
 
 chromatic, C<chromatic@wgz.org>, with much input from the Jellybean team
 (including Jonathan Paulett).  Tony Bowden and Tom Hukins both suggested some
-useful features.  Blame me for the implementation.
+useful features.  Kate L Pugh has also provided several patches.  Blame me for
+the implementation.
 
 =head1 BUGS
 
@@ -421,8 +444,6 @@ I<Sic transit gloria mundi>.
 =item * Optimize C<format_line()> to work on a list of lines
 
 =item * Handle nested C<strong> and C<emphasized> markings better
-
-=item * Encode links properly (spaces in extended links in C<make_html_link()>)
 
 =back
 
