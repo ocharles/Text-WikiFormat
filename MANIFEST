@@ -1,0 +1,6 @@
+ARTISTIC
+GPL
+MANIFEST
+Makefile.PL
+lib/Text/WikiFormat.pm
+t/Wiki.t
