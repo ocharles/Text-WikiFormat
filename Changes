@@ -1,3 +1,36 @@
+0.75
+	Sat Jul  2 19:48:00 UTC 2005 ($Rev$, $Author$)
+	- support absolute_links (Alex Vandiver and Best Practical)
+	- edit documentation to use better English
+	- add tests for a few undertested functions (t/subs.t)
+	- sign distribution
+	- add passthrough Makefile
+	- bumped up copyright year
+
+	Sun Apr 17 05:10:19 UTC 2005 ($Rev$, $Author$)
+	- added t/embedded-links.t from Art Henry
+	- allowed nested embedded links (MediaWiki support)
+
+	Sun Nov 28 23:58:18 UTC 2004 (Rev: 16, Author: chromatic)
+	- re-set properties on Changes
+	- bumped up version number (also stringify it)
+	- added Text::WikiFormat::Blocks to MANIFEST (oops)
+
+	Sun Nov 28 23:38:20 UTC 2004 (Rev: 15, chromatic)
+	- added more nesting tests (Teun van Eijsden)
+	- fix multiple levels of nesting (Teun van Eijsden)
+
+	Sun Nov 28 08:39:37 UTC 2004 (Rev: 14, chromatic)
+	- moved blocks into their own classes
+	- added Text::WikiFormat::Blocks
+	- fixed up failing tests from that fallout
+	- simplified lots of Text::WikiFormat internals
+
+	Sat Nov 27 16:44:38 UTC 2004
+	- mark build_requires in Build.PL
+	- use Scalar::Util::reftype() for checking ref
+	- added missing t/links.t test (don't know where it came from)
+
 0.72 Sun May  9 00:20:26 UTC 2004
 	- further code block nested indentation fixes (reported by Chris Winters)
 

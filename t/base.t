@@ -8,7 +8,7 @@ BEGIN
 
 use strict;
 
-use Test::More tests => 26;
+use Test::More tests => 35;
 
 my $module = 'Text::WikiFormat';
 use_ok( $module ) or exit;
@@ -37,65 +37,92 @@ local *Text::WikiFormat::tags = $tags;
 my $sb       = fetchsub( 'start_block' );
 my ($result) = $sb->( '= heading =', $tags );
 
-is_deeply( $result,
-	{ type => 'header', args => [ '=', 'heading' ],
-	  text => '', level => 0 },
-		'start_block() should find headings' );
+ok( $result->isa( 'Text::WikiFormat::Block::header' ),
+	'start_block() should find headings' ) or diag "... it's a $result";
+	
+is( $result->level(), 0,               '... at the correct level' );
 
 ($result) = $sb->( '	* unordered item', $tags );
-is_deeply( $result,
-	{ type => 'unordered', args => [], text => 'unordered item', level => 2 },
-		'... and unordered list' );
+
+ok( $result->isa( 'Text::WikiFormat::Block::unordered' ),
+	'start_block() should find unordered lists' ) or diag "... it's a $result";
+is( $result->level(), 2,               '... at the correct level' );
+is( join('', $result->raw_text() ),
+	'unordered item',                  '... with the correct text' );
 
 ($result) = $sb->( '	6. ordered item', $tags );
-is_deeply( $result,
-	{ type => 'ordered', args => [ 6 ], text => 'ordered item', level => 2 },
-		'... and ordered list' );
+
+ok( $result->isa( 'Text::WikiFormat::Block::ordered' ),
+	'start_block() should find ordered lists' ) or diag "... it's a $result";
+is( $result->level(), 2,               '... at the correct level'  );
+is( join('', $result->text()),
+	'ordered item',                    '... with the correct text' );
 
 ($result) = $sb->( '	  some code', $tags );
-is_deeply( $result,
-	{ type => 'code', args => [], text => "\tsome code", level => 0 },
-		'... and code' );
+
+ok( $result->isa( 'Text::WikiFormat::Block::code' ),
+	'start_block() should find code' ) or diag "... it's a $result";
+is( $result->level(), 0,               '... at the correct level'  );
+is( join('', $result->text()),
+	"\tsome code",                     '... with the correct text' );
 
 ($result) = $sb->( 'paragraph', $tags );
-is_deeply( $result,
-	{ type => 'paragraph', args => [], text => 'paragraph', level => 0 },
-		'... and paragraph' );
+
+ok( $result->isa( 'Text::WikiFormat::Block::paragraph' ),
+	'start_block() should find paragraph' ) or diag "... it's a $result";
+is( $result->level(), 0,               '... at the correct level'  );
+is( join('', $result->text() ),
+	'paragraph',                       '... with the correct text' );
 
 can_ok( $module, 'merge_blocks' );
 my $mb     = fetchsub( 'merge_blocks' );
-my @result = $mb->(
-	[{ type => 'code', text => 'a', level => 1 },
-	 { type => 'code', text => 'b', level => 1 },
-	], $tags
-);
+my @result = $mb->([
+	map { Text::WikiFormat::new_block( @$_ ) }
+		[ 'code', text => 'a', level => 1 ],
+ 		[ 'code', text => 'b', level => 1 ],
+]);
 is( @result, 1, 'merge_blocks() should merge identical blocks together' );
 is_deeply( $result[0]{text}, [qw( a b )], '... merging their text' );
 
 @result = $mb->([
-	{ type => 'unordered', text => 'foo', level => 1 },
-	{ type => 'unordered', text => 'bar', level => 1 },
+	map { Text::WikiFormat::new_block( @$_ ) }
+		[ 'unordered', text => 'foo', level => 1 ],
+		[ 'unordered', text => 'bar', level => 1 ],
 ], $tags);
-is( @result, 1,       '... merging unordered blocks' );
+is( @result, 1,                              '... merging unordered blocks' );
 is_deeply( $result[0]{text}, [qw( foo bar)], '... and their text' );
 
 @result = $mb->([
-	{ type => 'ordered', text => 'foo', level => 2 },
-	{ type => 'ordered', text => 'bar', level => 3 },
+	map { Text::WikiFormat::new_block( @$_ ) }
+		[ 'ordered', text => 'foo', level => 2 ],
+		[ 'ordered', text => 'bar', level => 3 ],
 ], $tags);
 is( @result, 2, '... not merging blocks at different levels' );
 
 can_ok( $module, 'process_blocks' );
-my $pb  = fetchsub( 'process_blocks' );
-@result = $pb->(
-	[{ type => 'header',    text => [ '' ],                     level => 0,
-	   args => [[ '==', 'my header' ]] },
-	 { type => 'paragraph', text => [qw( my lines of text )],   level => 0 },
-	 { type => 'ordered',   text => [qw( my ordered lines ),
-	 { type => 'unordered', text => [qw( my unordered lines )], level => 2 },
-	 ], level => 1, args => [[ 2 ], [ 3 ], [ 5 ]] },
-	], $tags
-);
+my $pb     = fetchsub( 'process_blocks' );
+my $nb     = fetchsub( 'nest_blocks'    );
+my @opts   = ( tags => $tags, opts => {} );
+my @blocks = map { Text::WikiFormat::new_block( @$_, @opts ) }
+	[ 'header',    text => [ '' ], level => 0,
+		args => [ '==', 'my header' ] ],
+	[ 'end', text => [ '' ], level => 0, @opts ],
+	[ 'paragraph', text => [qw( my lines of text )], 
+		args => [], level => 0 ],
+	[ 'end', text => [ '' ], level => 0, @opts ],
+	[ 'ordered',   text => [qw( my ordered lines ), 
+	Text::WikiFormat::new_block(
+		'unordered', text => [qw( my unordered lines )], level => 3, 
+		args => [], @opts
+	),
+	], level => 2, args => [] ];
+
+# it's hard to fake these up; this may be a bad test
+$blocks[2]{args}          = [ [], [], [] ];
+$blocks[4]{args}          = [ [ 2 ], [ 3 ], [ 5 ] ];
+$blocks[4]{text}[3]{args} = [ [], [], [] ];
+
+@result    = $pb->( \@blocks, $tags );
 
 is( @result, 1, 'process_blocks() should return processed text' );
 $result = $result[0];

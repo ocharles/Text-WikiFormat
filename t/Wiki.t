@@ -93,6 +93,7 @@ Here is another paragraph.
 WIKIEXAMPLE
 
 $htmltext = Text::WikiFormat::format($wikiexample, {}, { prefix => 'foo=' });
+
 like( $htmltext, qr!^<p>I am modifying this!,
 	'... should use correct tags when ending lists' );
 like( $htmltext, qr!<p>Here is a paragraph.<br />!,

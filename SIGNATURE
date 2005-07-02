@@ -1,0 +1,49 @@
+This file contains message digests of all files listed in MANIFEST,
+signed via the Module::Signature module, version 0.44.
+
+To verify the content in this distribution, first make sure you have
+Module::Signature installed, then type:
+
+    % cpansign -v
+
+It will check each file's integrity, as well as the signature's
+validity.  If "==> Signature verified OK! <==" is not displayed,
+the distribution may already have been compromised, and you should
+not run its Makefile.PL or Build.PL.
+
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA1
+
+SHA1 de99730c9cff5401331cc9b10da8fffc2607119e ARTISTIC
+SHA1 15241914e650f4ce35288a8451a741209a09d84a Build.PL
+SHA1 9d1cc034a8fbca229b3533755b919f799ca3f669 Changes
+SHA1 2d29c273fda30310211bbf6a24127d589be09b6c GPL
+SHA1 19b12131c4a555578b1fc1615cc149caa02feef5 MANIFEST
+SHA1 a31dc2121b48e99fb26d00e3b6ed49000b89ad07 MANIFEST.SKIP
+SHA1 8d256169717f2a3dd07f90c32b580f6ab89397c0 META.yml
+SHA1 93a4e459dc1f2153e130aedeecc3e902464ba344 Makefile.PL
+SHA1 7087864844866b4bfc9a425519ca44d0db2dfcdb README
+SHA1 6b8b2cd946d79513cb4e62ebada420dae60a0d54 lib/Text/WikiFormat.pm
+SHA1 194674eaca5f19f165c93500d854d0ac47ccc567 lib/Text/WikiFormat/Blocks.pm
+SHA1 f35a25f9883738be60f36b3ec2d0aeae9e2a9608 t/0-signature.t
+SHA1 6b0c236c189a6c5abcd86feb0f9ab1d0509a8888 t/Wiki.t
+SHA1 73e94b73a22fa219901850e7340f41e58530501a t/absolute_links.t
+SHA1 ff0c010e0cbdd7732571465b0ba29d0f71b2787e t/base.t
+SHA1 d864f36c992342251f566e4b2dbb0e32f0e7ead2 t/bugs.t
+SHA1 7f7c3daede89fef0cb3db071df53a5e888cfea6f t/embedded-links.t
+SHA1 fec795e0f50f3afb548b404f4d6315ea4af1abd1 t/explicit.t
+SHA1 55b5a3cb40967c1d7147b898f88d73499f18e234 t/implicit.t
+SHA1 e7e054097e2b204a4dace2b87269a8753ac700e8 t/kake.t
+SHA1 126ef9066477c3d894020719cffbe9a96bf8059f t/lists-nested.t
+SHA1 020a0439cb0386167ef3e14aad5ddc2619cc5da8 t/lists-no-indent.t
+SHA1 a10e4f4a706f993a37c497005008546cf86fff9a t/lists.t
+SHA1 f696767ffa180932f439cd9b5399a6e3da938b53 t/merge-hash.t
+SHA1 84e36a7b99acf1f88e7507a1b1db8cb36beb711b t/tag-override-use-as.t
+SHA1 ec6d7fb8d73a7568ed910e21c34e1a5f2e0b9f1c t/tag-override.t
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.1 (GNU/Linux)
+
+iD8DBQFCxvPYBd8Wn1wI6cQRAnTZAJ0VUQDspBRHSkDZ3S51AdvKUlhhXgCfWZmu
+DidS+s5mAChTqmolPFF99Os=
+=QD55
+-----END PGP SIGNATURE-----
