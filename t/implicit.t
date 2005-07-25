@@ -1,12 +1,9 @@
-#!/usr/bin/perl -w
+#!perl
+
+BEGIN { chdir 't' if -d 't' }
 
 use strict;
-
-BEGIN
-{
-	chdir 't' if -d 't';
-	use lib '../lib', '../blib/lib';
-}
+use warnings;
 
 use Test::More tests => 2;
 use Text::WikiFormat;

@@ -1,11 +1,10 @@
-#!/usr/bin/perl -w
+#!perl
 
-BEGIN {
-	chdir 't' if -d 't';
-	unshift @INC, '../blib/lib';
-}
+BEGIN { chdir 't' if -d 't' }
 
 use strict;
+use warnings;
+
 use Test::More tests => 5;
 
 use_ok( 'Text::WikiFormat' ) or exit;

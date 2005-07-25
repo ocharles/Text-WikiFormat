@@ -1,10 +1,9 @@
+#!perl
+
+BEGIN { chdir 't' if -d 't' }
 
 use strict;
-
-BEGIN {
-	chdir 't' if -d 't';
-	unshift @INC, '../lib', '../blib/lib';
-}
+use warnings;
 
 # for testing 'rootdir' in links
 my %constants = (

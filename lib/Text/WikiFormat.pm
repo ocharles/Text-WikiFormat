@@ -9,8 +9,7 @@ use Text::WikiFormat::Blocks;
 use Scalar::Util qw( blessed reftype );
 
 use vars qw( $VERSION %tags $indent );
-$VERSION = '0.75';
-
+$VERSION = '0.76'; 
 $indent  = qr/^(?:\t+|\s{4,})/;
 %tags    = (
 	indent		=> qr/^(?:\t+|\s{4,})/,
@@ -142,9 +141,15 @@ sub check_blocks
 	my $tags   = shift;
 	my %blocks = %{ $tags->{blocks} };
 	delete @blocks{ @{ $tags->{blockorder} } };
-	Carp::carp(
-		"No order specified for blocks '" . join(', ', keys %blocks ) . "'\n")
-		if keys %blocks;
+
+	if (keys %blocks)
+	{
+		require Carp;
+		Carp::carp(
+			"No order specified for blocks '" . join(', ', keys %blocks )
+			. "'\n"
+		)
+	}
 }
 
 sub find_blocks
@@ -257,30 +262,17 @@ sub process_block
 				$start_line->(
 					$line, $block->level(), $block->shift_args(), $tags, $opts
 				);
-			push @text, $start_line, $line, $end_line;
+			push @text, $start_line;
 		}
 		else
 		{
-			push @text, $start_line, $line, $end_line;
+			push @text, $start_line;
 		}
+		push @text, $line, $end_line;
 	}
 
 	pop @text if $between;
 	return join('', $start, @text, $end);
-}
-
-sub get_block
-{
-	my ($line, $tags, $opts) = @_;
-
-	return 'header', $line if $line =~ /$tags->{blocks}{header}/;
-
-	if ((my $level, $line) = get_indentation( $tags, $line ))
-	{
-		return 'list', $line, $level;
-	}
-
-	return 'paragraph', $line;
 }
 
 sub get_indentation
@@ -289,68 +281,6 @@ sub get_indentation
 
 	return 0, $text unless $text =~ s/($tags->{indent})//;
 	return( length( $1 ) + 1, $text, $1 );
-}
-
-sub end_all_lists
-{
-	my ($lists, $tags) = @_;
-	my $parsed = '';
-
-	while (@$lists and $lists->[0]{level} == 0)
-	{
-		my $list = shift @$lists;
-		$parsed .= end_list( $list, $tags->{ $list->{list} } );
-	}
-
-	while ( my $list = pop @$lists )
-	{
-		$parsed .= end_list( $list, $tags->{ $list->{list} } );
-	}
-
-	return $parsed;
-}
-
-sub find_list
-{
-	my ( $line, $list_types, $tags, $opts ) = @_;
-
-	for my $list (@$list_types) {
-		my $regex = $tags->{lists}{$list};
-
-		next unless $line =~ s/^$regex//;
-		
-		my @captures = map { defined $_ ? $_ : () }
-			$1, $2, $3, $4, $5, $6, $7, $8, $9;
-
-		$line = format_line($line, $tags, $opts) unless $list eq 'code';
-
-		return unless my $action = $tags->{$list};
-		my @formatted;
-
-		if (@$action == 3)
-		{
-			my $subref = $action->[2];
-			if (defined $subref and defined &$subref)
-			{
-				@formatted = $subref->($line, @captures);
-			}
-			else
-			{
-				warn "Bad actions for list type '$list'\n";
-			}
-		}
-		else
-		{
-			@formatted = ( $action->[2], $line, $action->[3] );
-		}
-		return $list, @formatted;
-	}
-}
-
-sub end_list
-{
-	my ($list, $tags) = @_;
-	return join('', grep { defined } @{ $list->{lines} }, $tags->[1]);
 }
 
 sub format_line
@@ -363,7 +293,7 @@ sub format_line
 
 	$text = find_extended_links( $text, $tags, $opts ) if $opts->{extended};
 
-	$text =~ s|(?<!["/>=])\b([A-Za-z]+(?:[A-Z]\w+)+)|
+	$text =~ s|(?<!["/>=])\b((?:[A-Z][a-z0-9]\w*){2,})|
 			  $tags->{link}->($1, $opts)|egx
 			if !defined $opts->{implicit_links} or $opts->{implicit_links};
 
@@ -378,7 +308,7 @@ sub find_innermost_balanced_pair
 	return if $start_pos == -1;
 
 	my $end_pos               =  index( $text, $close, $start_pos );
-	return if $end_pos == -1;
+	return if $end_pos   == -1;
 
 	my $open_length           = length( $open );
 	my $close_length          = length( $close );
@@ -438,10 +368,11 @@ sub escape_link
 
 sub find_link_title
 {
-	my ($link, $opts)    = @_;
+	my ($link, $opts)  = @_;
 	my $title;
-	($link, $title)      = split(/\|/, $link, 2) if $opts->{extended};
-	$title             ||= $link;
+
+	($link, $title)    = split(/\|/, $link, 2) if $opts->{extended};
+	$title             = $link unless $title;
 
 	return $link, $title;
 }

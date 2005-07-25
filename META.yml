@@ -1,6 +1,6 @@
 ---
 name: Text-WikiFormat
-version: 0.75
+version: 0.76
 author:
   - >-
     chromatic, C<chromatic@wgz.org>, with much input from the Jellybean team
@@ -24,7 +24,7 @@ build_requires:
 provides:
   Text::WikiFormat:
     file: lib/Text/WikiFormat.pm
-    version: 0.75
+    version: 0.76
   Text::WikiFormat::Block:
     file: lib/Text/WikiFormat/Blocks.pm
   Text::WikiFormat::Block::code:

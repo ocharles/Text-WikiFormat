@@ -1,14 +1,11 @@
-#!/usr/bin/perl -w
+#!perl
+
+BEGIN { chdir 't' if -d 't' }
 
 use strict;
+use warnings;
 
-BEGIN
-{
-	chdir 't' if -d 't';
-	use lib '../lib', '../blib/lib';
-}
-
-use Test::More tests => 11;
+use Test::More tests => 14;
 
 use_ok( 'Text::WikiFormat' );
 
@@ -94,3 +91,18 @@ like( $htmltext, qr!<pre><code>sub example_code[^<]+}\s*</code></pre>!m,
 	'pre tags should work' ); 
 
 like( $htmltext, qr!^\tmy \( \$foo \)!m, '... not removing further indents' ); 
+
+$wikitext =<<WIKI;
+CamelCase
+CamooseCase
+NOTCAMELCASE
+WIKI
+
+$htmltext = Text::WikiFormat::format($wikitext, {});
+
+like( $htmltext, qr!<a href="CamelCase">CamelCase</a>!, 
+	'parse actual CamelCase words into links' ); 
+like( $htmltext, qr!<a href="CamooseCase">CamooseCase</a>!, 
+	'... not repeating if using link as title' ); 
+like( $htmltext, qr!^NOTCAMELCASE!m,
+	'... but not words in all uppercase' ); 

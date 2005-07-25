@@ -1,13 +1,35 @@
+0.76
+	Mon Jul 25 05:58:24 UTC 2005 ($Rev$, $Author$)
+	- bumped up version number
+	- added documentation to Text::WikiFormat::Blocks
+
+	Thu Jul 14 06:45:57 UTC 2005 (Rev: 6309, Author: chromatic)
+	- fixed CAMELCASE linking bug reported by punkish on Perl Monks
+	- fixed inadvertent $title reuse in find_link_title()
+
+	Wed Jul 13 03:16:14 UTC 2005 (Rev: 6249, Author: chromatic)
+	- fixed a bug in list detection (find paragraphs correctly)
+	- removed unnecessary .t files in top-level directory (not distributed)
+	- removed unused functions:
+		- get_block()
+		- get_indentation()
+		- find_list()
+		- end_list()
+		- end_all_lists()
+	- added POD and POD coverage tests
+	- added stub documentation to Text::WikiFormat::Blocks
+	- modified tests to work better with Devel::Cover
+
 0.75
-	Sat Jul  2 19:48:00 UTC 2005 ($Rev$, $Author$)
+	Sat Jul  2 19:48:00 UTC 2005 (Rev: 5727, Author: chromatic)
 	- support absolute_links (Alex Vandiver and Best Practical)
-	- edit documentation to use better English
-	- add tests for a few undertested functions (t/subs.t)
-	- sign distribution
-	- add passthrough Makefile
+	- edited documentation to use better English
+	- added tests for a few undertested functions (t/subs.t)
+	- signed distribution
+	- added passthrough Makefile
 	- bumped up copyright year
 
-	Sun Apr 17 05:10:19 UTC 2005 ($Rev$, $Author$)
+	Sun Apr 17 05:10:19 UTC 2005 (Rev: 5727, Author: chromatic)
 	- added t/embedded-links.t from Art Henry
 	- allowed nested embedded links (MediaWiki support)
 

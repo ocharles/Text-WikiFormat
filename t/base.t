@@ -1,12 +1,9 @@
-#!/usr/bin/perl -w
+#!perl
 
-BEGIN
-{
-	chdir 't' if -d 't';
-	use lib '../lib', '../blib/lib';
-}
+BEGIN { chdir 't' if -d 't' }
 
 use strict;
+use warnings;
 
 use Test::More tests => 35;
 
@@ -47,7 +44,7 @@ is( $result->level(), 0,               '... at the correct level' );
 ok( $result->isa( 'Text::WikiFormat::Block::unordered' ),
 	'start_block() should find unordered lists' ) or diag "... it's a $result";
 is( $result->level(), 2,               '... at the correct level' );
-is( join('', $result->raw_text() ),
+is( join('', $result->text() ),
 	'unordered item',                  '... with the correct text' );
 
 ($result) = $sb->( '	6. ordered item', $tags );
