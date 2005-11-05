@@ -11,7 +11,7 @@ SKIP: {
 	    => "Valid signature" );
     }
     else {
-	diag("Next time around, consider install Module::Signature,\n".
+	diag("Next time around, consider installing Module::Signature,\n".
 	     "so you can verify the integrity of this distribution.\n");
 	skip("Module::Signature not installed", 1)
     }

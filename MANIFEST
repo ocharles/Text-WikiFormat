@@ -3,7 +3,6 @@ Build.PL
 Changes
 GPL
 MANIFEST
-MANIFEST.SKIP
 Makefile.PL
 META.yml
 README
