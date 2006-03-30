@@ -9,7 +9,7 @@ use Text::WikiFormat::Blocks;
 use Scalar::Util qw( blessed reftype );
 
 use vars qw( $VERSION %tags $indent );
-$VERSION = '0.77'; 
+$VERSION = '0.78'; 
 $indent  = qr/^(?:\t+|\s{4,})/;
 %tags    = (
 	indent		=> qr/^(?:\t+|\s{4,})/,
@@ -212,6 +212,8 @@ BEGIN
 		*{ $op . '_blocks' } = sub
 		{
 			my $blocks    = shift;
+			return unless @$blocks;
+
 			my @processed = shift @$blocks;
 
 			for my $block (@$blocks)
@@ -743,5 +745,5 @@ Matt Sergeant keeps threatening to write a nice SAX-throwing Wiki formatter.
 
 =head1 COPYRIGHT
 
-Copyright (c) 2002 - 2005, chromatic.  All rights reserved.  This module is
+Copyright (c) 2002 - 2006, chromatic.  All rights reserved.  This module is
 distributed under the same terms as Perl itself.

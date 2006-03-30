@@ -1,5 +1,11 @@
+0.78
+	Thu Mar 30 06:13:42 UTC 2006 ($Rev: 14494 $, $Author: chromatic $)
+	- fixed merge_blocks() bug reported by Richard Harman
+	- moved developer tests to t/developer and skipped them for everyone else
+	- updated copyright notices
+
 0.77
-	Sat Oct 29 02:54:02 UTC 2005 ($Rev: 9337 $, $Author: chromatic $)
+	Sat Oct 29 02:54:02 UTC 2005 (Rev: 9337, Author: chromatic)
 	- removed MANIFEST.SKIP (hopefully fixing Test::Signature errors)
 
 0.76

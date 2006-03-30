@@ -1,6 +1,6 @@
 ---
 name: Text-WikiFormat
-version: 0.77
+version: 0.78
 author:
   - >-
     chromatic, C<chromatic@wgz.org>, with much input from the Jellybean team
@@ -16,19 +16,24 @@ author:
     least half of it.
 abstract: module for translating Wiki formatted text into other formats
 license: perl
+resources:
+  license: http://dev.perl.org/licenses/
 requires:
-  Scalar::Util: ''
+  Scalar::Util: 1.14
   URI::Escape: ''
 build_requires:
   Test::More: 0.3
 provides:
   Text::WikiFormat:
     file: lib/Text/WikiFormat.pm
-    version: 0.77
+    version: 0.78
   Text::WikiFormat::Block:
     file: lib/Text/WikiFormat/Blocks.pm
   Text::WikiFormat::Block::code:
     file: lib/Text/WikiFormat/Blocks.pm
   Text::WikiFormat::Blocks:
     file: lib/Text/WikiFormat/Blocks.pm
-generated_by: Module::Build version 0.2611
+generated_by: Module::Build version 0.2709
+meta-spec:
+  url: http://module-build.sourceforge.net/META-spec-v1.2.html
+  version: 1.2

@@ -246,7 +246,7 @@ No known bugs.
 
 =head1 COPYRIGHT
 
-Copyright (c) 2005, chromatic.  Some rights reserved.
+Copyright (c) 2006, chromatic.  Some rights reserved.
 
 This module is free software; you can use, redistribute, and modify it under
 the same terms as Perl 5.8.x.

@@ -1,5 +1,5 @@
 This file contains message digests of all files listed in MANIFEST,
-signed via the Module::Signature module, version 0.44.
+signed via the Module::Signature module, version 0.53.
 
 To verify the content in this distribution, first make sure you have
 Module::Signature installed, then type:
@@ -15,20 +15,22 @@ not run its Makefile.PL or Build.PL.
 Hash: SHA1
 
 SHA1 de99730c9cff5401331cc9b10da8fffc2607119e ARTISTIC
-SHA1 15241914e650f4ce35288a8451a741209a09d84a Build.PL
-SHA1 1729c5276730fa024463c3a84cb9f893279f3ef3 Changes
+SHA1 483e81f082ea738f08f9d7f34a7bf75c06038ce6 Build.PL
+SHA1 07e4869576d3ea6f2789209768c883de88495632 Changes
 SHA1 2d29c273fda30310211bbf6a24127d589be09b6c GPL
-SHA1 d0a36c20f8c48fc147916e9ec05bf2b1b4b659cb MANIFEST
-SHA1 20f5ea75bdf433fd7414e119e182d7ba1a8e2447 META.yml
-SHA1 93a4e459dc1f2153e130aedeecc3e902464ba344 Makefile.PL
-SHA1 7087864844866b4bfc9a425519ca44d0db2dfcdb README
-SHA1 09719be2590c37fb654d22fab3e531246e9b96f4 lib/Text/WikiFormat.pm
-SHA1 c63eef20cbd571fcb80c4546a6468db635d21e9b lib/Text/WikiFormat/Blocks.pm
-SHA1 e7fbd29bd994639e82a480ca7668208c84faf780 t/0-signature.t
+SHA1 b1fdab7257699d0769dce91d71175633cd23fe03 MANIFEST
+SHA1 c4341d530dab52d50d7f3fa40dd1c847b91a6a1c META.yml
+SHA1 af45117f144fa6d47ea8423fdd6d7a7058a1b7fc Makefile.PL
+SHA1 32770eb383f51fec27a092d2c39f0b1c302df6e6 README
+SHA1 1946672ba01b4d06b9289400b3e344076040d6e5 lib/Text/WikiFormat.pm
+SHA1 edb1c47664a31da458bcc03148735f1440915eb8 lib/Text/WikiFormat/Blocks.pm
 SHA1 78b043cf397100ce208a46773f44e1bed440dbad t/Wiki.t
 SHA1 a73eed7b677e1fd2d0d1612d362fb2d137fe09c4 t/absolute_links.t
 SHA1 5b115b82b7b9162567f3697d55f61cc26a6ffc32 t/base.t
-SHA1 9ace3aba4d07b39084a78928c8980fc52ba03010 t/bugs.t
+SHA1 433fe0335bbfe04696d411b1697451c2b95f465d t/bugs.t
+SHA1 e7fbd29bd994639e82a480ca7668208c84faf780 t/developer/0-signature.t
+SHA1 a54845a2f59b9347a78ea0bb67b2b312497c0178 t/developer/pod-coverage.t
+SHA1 0190346d7072d458c8a10a45c19f86db641dcc48 t/developer/pod.t
 SHA1 d66244aad9c81167c4c863b360fdd66a3c0f6c84 t/embedded-links.t
 SHA1 79e7481badca8058fb93c35a29dfa9ecdc49191c t/explicit.t
 SHA1 187373bbd6734fb4f2c8028e7c256240751a2eb2 t/implicit.t
@@ -37,14 +39,12 @@ SHA1 29a6b81f518124b18d75aef0362852426a97441f t/lists-nested.t
 SHA1 5b6a8e3e055b056aed0a86843d2dfcb22ca767a0 t/lists-no-indent.t
 SHA1 b041c8be2d08be7f714c811acf52c0cfceef2eae t/lists.t
 SHA1 48201e08d545757032334a1322b09c71b01f0f60 t/merge-hash.t
-SHA1 a54845a2f59b9347a78ea0bb67b2b312497c0178 t/pod-coverage.t
-SHA1 0190346d7072d458c8a10a45c19f86db641dcc48 t/pod.t
 SHA1 333390d5963560b2348c4b9f645ec360b46d6bec t/tag-override-use-as.t
 SHA1 da63c04baa26696dadb354801e64d683a11abfb1 t/tag-override.t
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1.4.1 (GNU/Linux)
+Version: GnuPG v1.4.2.2 (GNU/Linux)
 
-iD8DBQFDbR8vBd8Wn1wI6cQRAtHcAJ9UfK3aRGVmIDDcuKf03j0oGWb2HgCghWLL
-op7JyngQlezReslTEoL5gPo=
-=qcIA
+iD8DBQFEK3fiqX/z6NoU2UoRAtnsAJwOkK4KZROFu1+xcUxeZElB+lgWdwCghCCZ
+anAMVmDeZqcm80mQ6HPg7pM=
+=urxX
 -----END PGP SIGNATURE-----

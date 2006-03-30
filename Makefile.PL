@@ -2,14 +2,15 @@
 use ExtUtils::MakeMaker;
 WriteMakefile
 (
-          'PL_FILES' => {},
-          'INSTALLDIRS' => 'site',
           'NAME' => 'Text::WikiFormat',
           'VERSION_FROM' => 'lib/Text/WikiFormat.pm',
           'PREREQ_PM' => {
+                           'Scalar::Util' => '1.14',
                            'Test::More' => '0.3',
-                           'Scalar::Util' => '',
                            'URI::Escape' => ''
-                         }
+                         },
+          'INSTALLDIRS' => 'site',
+          'EXE_FILES' => [],
+          'PL_FILES' => {}
         )
 ;

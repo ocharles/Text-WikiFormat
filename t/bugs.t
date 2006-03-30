@@ -5,7 +5,7 @@ BEGIN { chdir 't' if -d 't' }
 use strict;
 use warnings;
 
-use Test::More tests => 14;
+use Test::More tests => 16;
 
 use_ok( 'Text::WikiFormat' );
 
@@ -106,3 +106,8 @@ like( $htmltext, qr!<a href="CamooseCase">CamooseCase</a>!,
 	'... not repeating if using link as title' ); 
 like( $htmltext, qr!^NOTCAMELCASE!m,
 	'... but not words in all uppercase' ); 
+
+my @processed = Text::WikiFormat::merge_blocks( [] );
+is( @processed, 0, 'merge_blocks() should not autovivify empty blocks array' );
+@processed    = Text::WikiFormat::nest_blocks( [] );
+is( @processed, 0, '... nor should nest_blocks()' );

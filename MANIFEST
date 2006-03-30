@@ -8,11 +8,13 @@ META.yml
 README
 lib/Text/WikiFormat.pm
 lib/Text/WikiFormat/Blocks.pm
-t/0-signature.t
 t/Wiki.t
 t/absolute_links.t
 t/base.t
 t/bugs.t
+t/developer/0-signature.t
+t/developer/pod.t
+t/developer/pod-coverage.t
 t/embedded-links.t
 t/explicit.t
 t/implicit.t
@@ -20,8 +22,6 @@ t/kake.t
 t/lists.t
 t/lists-nested.t
 t/lists-no-indent.t
-t/pod.t
-t/pod-coverage.t
 t/merge-hash.t
 t/tag-override-use-as.t
 t/tag-override.t
