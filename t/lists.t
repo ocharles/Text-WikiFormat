@@ -1,7 +1,5 @@
 #!perl
 
-BEGIN { chdir 't' if -d 't' }
-
 use strict;
 use warnings;
 

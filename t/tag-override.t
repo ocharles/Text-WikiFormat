@@ -1,7 +1,5 @@
 #!perl
 
-BEGIN { chdir 't' if -d 't' }
-
 use strict;
 use warnings;
 
@@ -19,8 +17,6 @@ my $wikitext =<<WIKI;
 
 WIKI
 
-my $indent = $Text::WikiFormat::indent;
-
 my $htmltext = Text::WikiFormat::format($wikitext);
 like( $htmltext, qr!<li>This should be a list.</li>!m,
 	'unordered lists should be rendered correctly' );
@@ -32,7 +28,7 @@ my %tags = (
 	lists => {
 		ordered   => qr/([\dA-Za-z]+)\.\s*/,
 		unordered => qr/\*\s*/,
-		code      => qr//,
+		code      => qr/  /,
 	},
 );
 
@@ -47,7 +43,7 @@ like( $htmltext, qr!<li value="1">This should be an ordered list.</li>!m,
 	blocks => {
 		ordered   => qr/([\dA-Za-z]+)\.\s*/,
 		unordered => qr/^\s*!\s*/,
-		code      => qr//,
+		code      => qr/  /,
 	},
 );
 

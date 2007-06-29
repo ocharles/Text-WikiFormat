@@ -1,7 +1,5 @@
 #!perl
 
-BEGIN { chdir 't' if -d 't' }
-
 use strict;
 use warnings;
 
@@ -24,8 +22,6 @@ my $wikitext =<<WIKI;
 2. But not indented
 
 WIKI
-
-my $indent = $Text::WikiFormat::indent;
 
 my $htmltext = Text::WikiFormat::format($wikitext);
 like( $htmltext, qr!<li>This should be a list.</li>!m,

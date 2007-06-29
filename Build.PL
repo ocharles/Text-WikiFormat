@@ -40,7 +40,7 @@ my $build = $class->new(
 	},
 	build_requires =>
 	{
-		'Test::More'   => 0.30,
+		'Test::More'   => '0.30',
 	},
 	create_makefile_pl => 'traditional',
 	sign               => '1',

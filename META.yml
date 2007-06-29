@@ -1,18 +1,12 @@
 ---
 name: Text-WikiFormat
-version: 0.78
+version: 0.79
 author:
-  - >-
+  - |-
     chromatic, C<chromatic@wgz.org>, with much input from the Jellybean team
-    
-    (including Jonathan Paulett).  Kate L Pugh has also provided several
-    patches,
-    
+    (including Jonathan Paulett).  Kate L Pugh has also provided several patches,
     many failing tests, and is usually the driving force behind new features and
-    
-    releases.  If you think this module is worth buying me a beer, she deserves
-    at
-    
+    releases.  If you think this module is worth buying me a beer, she deserves at
     least half of it.
 abstract: module for translating Wiki formatted text into other formats
 license: perl
@@ -22,18 +16,18 @@ requires:
   Scalar::Util: 1.14
   URI::Escape: ''
 build_requires:
-  Test::More: 0.3
+  Test::More: 0.30
 provides:
   Text::WikiFormat:
     file: lib/Text/WikiFormat.pm
-    version: 0.78
+    version: 0.79
   Text::WikiFormat::Block:
     file: lib/Text/WikiFormat/Blocks.pm
   Text::WikiFormat::Block::code:
     file: lib/Text/WikiFormat/Blocks.pm
   Text::WikiFormat::Blocks:
     file: lib/Text/WikiFormat/Blocks.pm
-generated_by: Module::Build version 0.2709
+generated_by: Module::Build version 0.2808
 meta-spec:
   url: http://module-build.sourceforge.net/META-spec-v1.2.html
   version: 1.2

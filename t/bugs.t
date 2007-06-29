@@ -1,7 +1,5 @@
 #!perl
 
-BEGIN { chdir 't' if -d 't' }
-
 use strict;
 use warnings;
 
@@ -33,7 +31,7 @@ use Text::WikiFormat as => 'wf';
 
 package main;
 
-diag( 'make sure tag overrides work for Kake' );
+# make sure tag overrides work for Kake
 
 $wikitext = <<WIKI;
 
@@ -53,7 +51,7 @@ $htmltext = Text::WikiFormat::format($wikitext, \%format_tags );
 like( $htmltext, qr/<li>foo<\/li>/, "first level of unordered list" );
 like( $htmltext, qr/<li>bar<\/li>/, "nested unordered lists OK" );
 
-diag( 'Check that blocks not in blockorder are not fatal' );
+# Check that blocks not in blockorder are not fatal
 
 %format_tags = (
 	blocks     => {

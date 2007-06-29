@@ -1,7 +1,5 @@
 #!perl
 
-BEGIN { chdir 't' if -d 't' }
-
 use strict;
 use warnings;
 
@@ -61,7 +59,7 @@ ok( $result->isa( 'Text::WikiFormat::Block::code' ),
 	'start_block() should find code' ) or diag "... it's a $result";
 is( $result->level(), 0,               '... at the correct level'  );
 is( join('', $result->text()),
-	"\tsome code",                     '... with the correct text' );
+	"some code",                     '... with the correct text' );
 
 ($result) = $sb->( 'paragraph', $tags );
 

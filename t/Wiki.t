@@ -1,7 +1,5 @@
 #!perl
 
-BEGIN { chdir 't' if -d 't' }
-
 use strict;
 use warnings;
 
@@ -140,8 +138,7 @@ like( $htmltext, qr!<h2>sub heading</h2>!,
 
 # test overridable tags
 
-ok( ! UNIVERSAL::can( 'main', 'wikiformat' ),
-	'Module should import nothing by default' );
+ok( ! main->can( 'wikiformat' ), 'Module should import nothing by default' );
 
 can_ok( 'Text::WikiFormat', 'import' );
 

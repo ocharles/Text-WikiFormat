@@ -15,7 +15,7 @@ sub import
 		
 		unless ($ctor = $class->can( 'new' ))
 		{
-			*{ $class . '::ISA' } = [ 'Text::WikiFormat::Block' ];
+			@{ $class . '::ISA' } = ( 'Text::WikiFormat::Block' );
 			$ctor = $class->can( 'new' );
 		}
 
@@ -120,6 +120,7 @@ sub nest
 {
 	my ($self, $next_block) = @_;
 
+	return unless $next_block = $self->merge( $next_block );
 	return $next_block unless $self->nests() and $next_block->nests();
 	return $next_block unless $self->level()  <  $next_block->level();
 

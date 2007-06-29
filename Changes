@@ -1,5 +1,17 @@
+0.79
+    Fri Jun 29 01:43:12 UTC 2007 ($Rev: 4391 $, $Author: chromatic $)
+    - removed noisy and unnecessary diag() calls in tests
+    - fixed a magic @ISA assignment for 5.9.5 (Andreas Koenig)
+    - removed signature test (not that useful)
+
+	Tue Oct 10 04:46:55 UTC 2006 (Rev: 2945, Author: chromatic)
+	- removed directory changes in tests
+	- return merged hash from merge_hash()
+	- added hash merging tests from Derek Price (part of RT #21269)
+	- fixed nested lists error reported by Derek Price (RT #21269)
+
 0.78
-	Thu Mar 30 06:13:42 UTC 2006 ($Rev: 14494 $, $Author: chromatic $)
+	Thu Mar 30 06:13:42 UTC 2006 (Rev: 14494, Author: chromatic)
 	- fixed merge_blocks() bug reported by Richard Harman
 	- moved developer tests to t/developer and skipped them for everyone else
 	- updated copyright notices

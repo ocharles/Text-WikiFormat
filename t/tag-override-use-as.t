@@ -1,7 +1,5 @@
 #!perl
 
-BEGIN { chdir 't' if -d 't' }
-
 use strict;
 use warnings;
 
@@ -21,8 +19,6 @@ my $wikitext =<<WIKI;
     ! But marked differently
 
 WIKI
-
-my $indent = $Text::WikiFormat::indent;
 
 my %format_tags = ( blocks => { unordered => qr/\s*!\s*/ } );
  

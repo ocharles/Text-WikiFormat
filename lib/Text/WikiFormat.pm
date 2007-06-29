@@ -9,7 +9,7 @@ use Text::WikiFormat::Blocks;
 use Scalar::Util qw( blessed reftype );
 
 use vars qw( $VERSION %tags $indent );
-$VERSION = '0.78'; 
+$VERSION = '0.79';
 $indent  = qr/^(?:\t+|\s{4,})/;
 %tags    = (
 	indent		=> qr/^(?:\t+|\s{4,})/,
@@ -34,13 +34,13 @@ $indent  = qr/^(?:\t+|\s{4,})/;
 	blocks		=> {
 		ordered		=> qr/^([\dA-Za-z]+)\.\s*/,
 		unordered	=> qr/^\*\s*/,
-		code		=> qr/  /,
+		code		=> qr/^(?:\t+|\s{4,})  /,
 		header      => qr/^(=+) (.+) \1/,
 		paragraph   => qr/^/,
 		line        => qr/^-{4,}/,
 	},
 
-	indented    => { map { $_ => 1 } qw( ordered unordered code )},
+	indented    => { map { $_ => 1 } qw( ordered unordered )},
 	nests       => { map { $_ => 1 } qw( ordered unordered ) },
 
 	blockorder               =>
@@ -84,6 +84,8 @@ sub merge_hash
 
 		$to->{$key} = $value;
 	}
+
+	return $to;
 }
 
 sub import
@@ -157,7 +159,7 @@ sub find_blocks
 	my ($text, $tags, $opts) = @_;
 
 	my @blocks;
-	for my $line ( split(/\n/, $text) )
+	for my $line ( split(/\r?\n/, $text) )
 	{
 		my $block = start_block( $line, $tags, $opts );
 		push @blocks, $block if $block;
@@ -182,14 +184,6 @@ sub start_block
 		}
 
 		my $marker_removed = length ($line =~ s/$tags->{blocks}{$block}//);
-		if ($block eq 'code')
-		{
-			$level          = 0;
-			$marker_removed = 1;
-
-			# don't remove the indent, but do remove the code indent
-			($line = $text) =~ s/$tags->{blocks}{code}//;
-		}
 
 		next unless $marker_removed;
 
