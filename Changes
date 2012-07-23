@@ -1,3 +1,7 @@
+0.80 Mon 23 Jul 16:23:14 BST 2012
+    - Automatic absolute links now work when at the very start of some text
+      Fixes bug #27850.
+
 0.79
     Fri Jun 29 01:43:12 UTC 2007 ($Rev: 4391 $, $Author: chromatic $)
     - removed noisy and unnecessary diag() calls in tests
