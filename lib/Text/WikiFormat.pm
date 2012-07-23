@@ -322,7 +322,7 @@ sub find_extended_links
 	my ($text, $tags, $opts) = @_;
 
     my $schemas = join('|', @{$tags->{schemas}});
-    $text =~ s!(\s+)(($schemas):\S+)!$1 . $tags->{link}->($2, $opts)!egi
+    $text =~ s!(^|\s+)(($schemas):\S+)!$1 . $tags->{link}->($2, $opts)!egi
 	    if $opts->{absolute_links};
 
 	my ($start, $end) = @{ $tags->{extended_link_delimiters} };

@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 4;
+use Test::More tests => 5;
 use Text::WikiFormat;
 
 my $wikitext = <<'WIKI';
@@ -42,3 +42,7 @@ is( $htmltext,
      qq|<p>this is a <a href="moose:notalink">moose:notalink</a></p>\n|,
      q|Schema tag allows specifying what is a link|
    );
+
+
+$htmltext = Text::WikiFormat::format('http://example.com', {}, { extended => 1, absolute_links => 1 } );
+like($htmltext, qr{^<p><a href="http://example.com">http://example.com</a></p>});
