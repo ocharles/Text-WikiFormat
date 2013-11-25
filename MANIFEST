@@ -24,3 +24,4 @@ t/lists-no-indent.t
 t/merge-hash.t
 t/tag-override-use-as.t
 t/tag-override.t
+META.json

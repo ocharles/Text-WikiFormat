@@ -35,7 +35,7 @@ my $build = $class->new(
 	module_name => 'Text::WikiFormat',
 	requires    =>
 	{
-		'URI::Escape'  => '',
+		'URI::Escape'  => '0.01',
 		'Scalar::Util' => '1.14',
 	},
 	build_requires =>

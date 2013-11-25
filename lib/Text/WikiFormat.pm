@@ -9,7 +9,7 @@ use Text::WikiFormat::Blocks;
 use Scalar::Util qw( blessed reftype );
 
 use vars qw( $VERSION %tags $indent );
-$VERSION = '0.80';
+$VERSION = '0.81';
 $indent  = qr/^(?:\t+|\s{4,})/;
 %tags    = (
 	indent		=> qr/^(?:\t+|\s{4,})/,
