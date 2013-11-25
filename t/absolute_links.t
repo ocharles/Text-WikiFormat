@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 5;
+use Test::More tests => 6;
 use Text::WikiFormat;
 
 my $wikitext = <<'WIKI';
@@ -28,6 +28,9 @@ is( $htmltext,
     q|email mailto:chromatic@example.com</p>| . "\n",
     q|Doesn't pick up links when absolute_links is off|
   );    
+
+$htmltext = Text::WikiFormat::format($wikitext, {}, { extended => 1, absolute_links => 1, nofollow_extended => 1 } );
+like($htmltext, qr{<a href="http://www.cpan.org/" rel="nofollow">http://www.cpan.org/</a>});
 
 $wikitext = "this is a moose:notalink";
 
